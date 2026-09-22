@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>에스디바이오센서 DART 재무 대시보드</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#12202e;background:#f4f7fa} body{margin:0}.wrap{max-width:1120px;margin:auto;padding:32px 20px 60px}h1{margin:0;font-size:28px}p{color:#516172}.meta{font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:24px 0}.card,.panel{background:#fff;border:1px solid #dfe7ef;border-radius:12px;padding:18px;box-shadow:0 1px 2px #1830460d}.label{font-size:13px;color:#5f7080}.value{font-size:24px;font-weight:700;margin-top:8px}.panel{margin-top:18px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:11px 8px;border-bottom:1px solid #e7edf3;text-align:right}th:first-child,td:first-child{text-align:left}th{color:#516172;font-weight:600}a{color:#1464b8} .warn{color:#a24b00}
+  </style>
+</head>
+<body><main class="wrap">
+  <h1>에스디바이오센서 재무 대시보드</h1>
+  <p id="subtitle">OpenDART 연결 사업보고서 기준</p>
+  <div id="cards" class="grid"></div>
+  <section class="panel"><h2>주요 재무 수치</h2><div id="financials"></div></section>
+  <section class="panel"><h2>재무비율</h2><div id="ratios"></div></section>
+  <p class="meta">본 화면은 투자 권유가 아닙니다. 원자료와 계산식은 저장소의 <a href="data/financial_summary.csv">financial_summary.csv</a>, <a href="data/ratios.csv">ratios.csv</a>에서 확인할 수 있습니다.</p>
+</main><script>
+const won=v=>v==null?'N/A':(v/1e8).toLocaleString('ko-KR',{maximumFractionDigits:0})+'억원';
+const pct=v=>v==null?'N/A':v.toLocaleString('ko-KR',{maximumFractionDigits:1})+'%';
+const table=(heads,rows,format)=>'<table><thead><tr>'+heads.map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map((x,i)=>`<td>${format(x,i)}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+fetch('data/dashboard.json').then(r=>{if(!r.ok)throw Error();return r.json()}).then(d=>{
+  const f=d.financials.at(-1), q=d.ratios.at(-1); document.querySelector('#subtitle').textContent=`${d.basis} · 기준연도 ${f.year} · 갱신 ${new Date(d.updated_at).toLocaleString('ko-KR')}`;
+  const cards=[['매출액',won(f.revenue)],['영업이익',won(f.operating_income)],['영업이익률',pct(q.operating_margin_pct)],['순이익률',pct(q.net_margin_pct)],['유동비율',pct(q.current_ratio_pct)],['부채비율',pct(q.debt_to_equity_pct)]];
+  cards.forEach(([l,v])=>document.querySelector('#cards').insertAdjacentHTML('beforeend',`<article class="card"><div class="label">${l}</div><div class="value">${v}</div></article>`));
+  document.querySelector('#financials').innerHTML=table(['항목',...d.financials.map(x=>x.year)], [['매출액',...d.financials.map(x=>x.revenue)],['영업이익',...d.financials.map(x=>x.operating_income)],['당기순이익',...d.financials.map(x=>x.net_income)],['영업활동현금흐름',...d.financials.map(x=>x.operating_cash_flow)],['자산총계',...d.financials.map(x=>x.total_assets)],['자본총계',...d.financials.map(x=>x.total_equity)]],(v,i)=>i?won(v):v);
+  const keys=[['매출 성장률','revenue_growth_pct','pct'],['ROA','roa_pct','pct'],['ROE','roe_pct','pct'],['CFO 전환율','cfo_conversion_pct','pct'],['DSO','dso_days','day'],['자기자본비율','equity_ratio_pct','pct']];
+  document.querySelector('#ratios').innerHTML='<table><thead><tr><th>지표</th>'+d.ratios.map(x=>`<th>${x.year}</th>`).join('')+'</tr></thead><tbody>'+keys.map(([n,k,t])=>`<tr><td>${n}</td>`+d.ratios.map(x=>`<td>${x[k]==null?'N/A':t==='day'?x[k].toLocaleString('ko-KR',{maximumFractionDigits:1})+'일':pct(x[k])}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+}).catch(()=>{document.querySelector('#subtitle').innerHTML='<span class="warn">아직 데이터가 없습니다. README의 초기 수집 절차를 실행한 뒤 다시 열어주세요.</span>'});
+</script></body></html>
