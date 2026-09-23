@@ -65,6 +65,7 @@ def main():
     with (ROOT/"data"/"financial_summary.csv").open("w",encoding="utf-8",newline="") as f:
         writer=csv.DictWriter(f,fieldnames=FIELDS);writer.writeheader();writer.writerows(rows)
     disclosure=request("list.json",{"crtfc_key":key,"corp_code":CORP_CODE,"bgn_de":f"{args.start_year}0101","end_de":date.today().strftime("%Y%m%d"),"pblntf_ty":"A","page_count":"100"})
-    (ROOT/"reports"/"opendart_disclosures.json").write_text(json.dumps({"rss_url":COMPANY_RSS,"reports":disclosure.get("list",[])},ensure_ascii=False,indent=2),encoding="utf-8")
+    reports_dir=ROOT/"reports";reports_dir.mkdir(parents=True,exist_ok=True)
+    (reports_dir/"opendart_disclosures.json").write_text(json.dumps({"rss_url":COMPANY_RSS,"reports":disclosure.get("list",[])},ensure_ascii=False,indent=2),encoding="utf-8")
     print(f"수집 완료: {len(rows)}개 기간 ({args.start_year}년~현재)")
 if __name__=="__main__":main()
