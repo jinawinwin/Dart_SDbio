@@ -1,5 +1,7 @@
 # 에스디바이오센서 DART 재무 분석 에이전트
 
+[![대시보드 바로가기](https://img.shields.io/badge/%F0%9F%94%97-%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-0969da?style=for-the-badge)](https://jinawinwin.github.io/SDbio_dart/)
+
 에스디바이오센서(종목코드 `137310`, DART 고유번호 `00854997`)의 연결 사업보고서 재무제표를 OpenDART API에서 수집하고, 주요 재무비율을 계산해 GitHub Pages 대시보드로 표시합니다.
 
 ## 포함 내용
