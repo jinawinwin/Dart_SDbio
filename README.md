@@ -1,6 +1,6 @@
 # 에스디바이오센서 DART 재무 분석 에이전트
 
-[![대시보드 바로가기](https://img.shields.io/badge/%F0%9F%94%97-%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-0969da?style=for-the-badge)](https://jinawinwin.github.io/SDbio_dart/)
+[![대시보드 바로가기](https://img.shields.io/badge/%F0%9F%94%97-%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-0969da?style=for-the-badge)](https://jinawinwin.github.io/Dart_SDbio/)
 
 에스디바이오센서(종목코드 `137310`, DART 고유번호 `00854997`)의 연결 재무제표를 OpenDART API에서 수집하고, 주요 재무비율을 계산해 GitHub Pages 대시보드로 표시합니다. 2010년부터 현재까지 연간·1분기·반기·3분기 공시를 수집하며, 이후 공시는 GitHub Actions가 매주 자동 점검합니다.
 
@@ -9,7 +9,7 @@
 - `scripts/fetch_opendart.py`: 2010년부터 연간(`11011`)·1분기(`11013`)·반기(`11012`)·3분기(`11014`) 연결 재무제표를 수집하고 원문 응답을 `data/raw/`에 저장합니다. 제공한 [기업 RSS](https://dart.fss.or.kr/api/companyRSS.xml?crpCd=00854997) 주소도 기록합니다.
 - `scripts/analyze.py`: 동일 보고서 유형의 전년 기간과 비교해 수익성, 유동성, 안정성, 현금흐름, 활동성 지표를 계산합니다. ROA·ROE·DSO에는 평균 잔액을 적용합니다.
 - `index.html`: API 키를 노출하지 않고 계산된 JSON만 읽는 GitHub Pages 정적 대시보드입니다.
-- `.github/workflows/update-data.yml`: 매월과 수동 실행 시 데이터를 갱신하고 변경된 수치만 자동 커밋합니다.
+- `.github/workflows/update-data.yml`: 매주와 수동 실행 시 데이터를 갱신하고 변경된 수치만 자동 커밋합니다.
 
 ## OpenDART API 키 설정
 
@@ -20,7 +20,7 @@
 DART_API_KEY=발급받은_인증키
 ```
 
-3. GitHub 저장소 `jinawinwin/SDbio_dart`의 **Settings → Secrets and variables → Actions → New repository secret**에서 이름을 `DART_API_KEY`로 지정하고 같은 키를 등록합니다. 키를 코드·README·Issues에 올리지 마세요.
+3. GitHub 저장소 `jinawinwin/Dart_SDbio`의 **Settings → Secrets and variables → Actions → New repository secret**에서 이름을 `DART_API_KEY`로 지정하고 같은 키를 등록합니다. 키를 코드·README·Issues에 올리지 마세요.
 
 ## 처음 실행
 
@@ -38,7 +38,7 @@ ZIP을 푼 폴더에서 다음을 실행합니다.
 ```powershell
 git init
 git branch -M main
-git remote add origin https://github.com/jinawinwin/SDbio_dart.git
+git remote add origin https://github.com/jinawinwin/Dart_SDbio.git
 git add .
 git commit -m "feat: add SD Biosensor OpenDART dashboard"
 git push -u origin main
