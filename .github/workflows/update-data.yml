@@ -2,31 +2,51 @@ name: Update OpenDART financial data
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/**"
+      - "index.html"
+      - "README.md"
+      - "assets/**"
+      - ".github/workflows/update-data.yml"
   schedule:
-    # 매월 6일 03:20 UTC = 한국시간 12:20. 사업보고서 제출 시기를 고려한 정기 갱신.
-    - cron: "20 3 6 * *"
+    - cron: "17 2 1 * *"
 
 permissions:
   contents: write
 
+concurrency:
+  group: opendart-financial-data
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
-          python-version: "3.12"
+          fetch-depth: 1
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
       - name: Fetch and analyse
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
         run: |
-          python scripts/fetch_opendart.py
+          python scripts/fetch_opendart.py --start-year 2010
           python scripts/analyze.py
       - name: Commit refreshed data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data reports
-          git diff --cached --quiet || git commit -m "chore: update OpenDART financial data"
-          git push
+          if git diff --cached --quiet; then
+            echo "No data changes to commit."
+          else
+            git commit -m "chore: update OpenDART financial data"
+            git push
+          fi

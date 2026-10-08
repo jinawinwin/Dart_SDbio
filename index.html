@@ -1,29 +1,121 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>에스디바이오센서 DART 재무 대시보드</title>
-  <style>
-    :root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#12202e;background:#f4f7fa} body{margin:0}.wrap{max-width:1120px;margin:auto;padding:32px 20px 60px}h1{margin:0;font-size:28px}p{color:#516172}.meta{font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:24px 0}.card,.panel{background:#fff;border:1px solid #dfe7ef;border-radius:12px;padding:18px;box-shadow:0 1px 2px #1830460d}.label{font-size:13px;color:#5f7080}.value{font-size:24px;font-weight:700;margin-top:8px}.panel{margin-top:18px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:11px 8px;border-bottom:1px solid #e7edf3;text-align:right}th:first-child,td:first-child{text-align:left}th{color:#516172;font-weight:600}a{color:#1464b8} .warn{color:#a24b00}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD BIOSENSOR | DART Financial Dashboard</title>
+<style>
+:root{--navy:#102a43;--blue:#0969ad;--ink:#102a43;--muted:#627d98;--line:#d9e2ec;--bg:#f4f7fa;--panel:#fff;--shadow:0 10px 30px rgba(16,42,67,.08)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1260px;margin:auto;padding:24px 20px 80px}.hero{display:flex;align-items:center;gap:20px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:16px;min-width:0}.brand img{width:360px;max-width:56vw;height:auto}h1{margin:0;font-size:30px;letter-spacing:-.02em}.sub{margin:5px 0 0;color:var(--muted);font-size:14px}.meta{display:flex;flex-wrap:wrap;gap:8px 14px;color:var(--muted);font-size:13px;margin:12px 0 20px}.chip{padding:6px 10px;border:1px solid var(--line);background:#fff;border-radius:999px}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:0 0 18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:var(--shadow);min-height:92px}.card .label{font-size:12px;color:var(--muted)}.card .value{font-size:22px;font-weight:750;margin-top:8px;white-space:nowrap}.card .delta{font-size:12px;margin-top:4px;color:var(--muted)}
+.fig-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px;margin-top:14px}.figure{min-height:320px}.figure .caption{font-size:12px;color:var(--muted);margin-top:8px}
+svg.chart{width:100%;height:250px;display:block}.gridline{stroke:#e5edf4;stroke-width:1}.axis{stroke:#c7d3df;stroke-width:1}.axis-label{font-size:10px;fill:#627d98}.legend{font-size:11px;fill:#486581}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{border-collapse:separate;border-spacing:0;min-width:1080px;width:100%;font-size:12.5px;background:#fff}th,td{padding:10px 10px;border-bottom:1px solid #edf2f7;text-align:right;white-space:nowrap}th{position:sticky;top:0;background:#f7fafc;color:#486581;font-weight:700;z-index:2}th:first-child,td:first-child{position:sticky;left:0;text-align:left;background:inherit;z-index:3}tbody tr:hover td{background:#f8fbfd}tbody tr:last-child td{border-bottom:0}
+.section-note{font-size:12px;color:var(--muted);margin:0 0 12px}.badge-note{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:#fff}.peer table{min-width:780px}.peer td:nth-child(1){font-weight:700}.footer{margin-top:28px;color:var(--muted);font-size:12px;line-height:1.6}.warn{color:#b54708}.error{padding:16px;background:#fff4e5;border:1px solid #fed7aa;border-radius:12px;color:#9a3412}
+.toolbox{position:fixed;right:18px;top:38%;z-index:50;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 40px rgba(16,42,67,.16);padding:10px;width:170px}.toolbox-title{font-weight:750;font-size:13px;margin:0 0 8px}.tool-btn{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px;margin-top:7px;text-align:left;font-weight:650;cursor:pointer;color:var(--ink)}.tool-btn:hover{border-color:#b8cadb;background:#f7fbff}.excel-menu{display:none;margin-top:8px;padding:9px;border-top:1px solid var(--line)}.excel-menu.open{display:block}.excel-menu label{display:block;font-size:12px;margin:7px 0}.download-btn{width:100%;border:0;border-radius:10px;padding:9px 10px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;margin-top:6px}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.toolbox{right:12px;top:auto;bottom:14px}}@media(max-width:760px){.wrap{padding:18px 12px 110px}.hero{align-items:flex-start}.brand img{width:300px;max-width:76vw}.hero h1{font-size:24px}.fig-grid{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.figure{min-height:290px}.toolbox{width:160px}}
+@media print{@page{size:A4 landscape;margin:9mm}body{background:#fff}.wrap{max-width:none;padding:0}.toolbox{display:none}.panel,.card{box-shadow:none;break-inside:avoid}.panel{border-color:#cfd9e3}.hero{margin-bottom:8px}.fig-grid{gap:8px}.figure{min-height:250px}svg.chart{height:200px}.table-wrap{overflow:visible}.table-wrap table{min-width:0;font-size:8px}th,td{padding:5px 4px}.footer{font-size:9px}}
+</style>
 </head>
-<body><main class="wrap">
-  <h1>에스디바이오센서 재무 대시보드</h1>
-  <p id="subtitle">OpenDART 연결 사업보고서 기준</p>
-  <div id="cards" class="grid"></div>
-  <section class="panel"><h2>주요 재무 수치</h2><div id="financials"></div></section>
-  <section class="panel"><h2>재무비율</h2><div id="ratios"></div></section>
-  <p class="meta">본 화면은 투자 권유가 아닙니다. 원자료와 계산식은 저장소의 <a href="data/financial_summary.csv">financial_summary.csv</a>, <a href="data/ratios.csv">ratios.csv</a>에서 확인할 수 있습니다.</p>
-</main><script>
-const won=v=>v==null?'N/A':(v/1e8).toLocaleString('ko-KR',{maximumFractionDigits:0})+'억원';
-const pct=v=>v==null?'N/A':v.toLocaleString('ko-KR',{maximumFractionDigits:1})+'%';
-const table=(heads,rows,format)=>'<table><thead><tr>'+heads.map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map((x,i)=>`<td>${format(x,i)}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
-fetch('data/dashboard.json').then(r=>{if(!r.ok)throw Error();return r.json()}).then(d=>{
-  const history=d.annual_financials ?? d.financials, historyRatios=d.annual_ratios ?? d.ratios, f=history.at(-1), q=historyRatios.at(-1); document.querySelector('#subtitle').textContent=`${d.coverage ?? d.basis} · 대시보드 표는 연간 기준 · 갱신 ${new Date(d.updated_at).toLocaleString('ko-KR')}`;
-  const cards=[['매출액',won(f.revenue)],['영업이익',won(f.operating_income)],['영업이익률',pct(q.operating_margin_pct)],['순이익률',pct(q.net_margin_pct)],['유동비율',pct(q.current_ratio_pct)],['부채비율',pct(q.debt_to_equity_pct)]];
-  cards.forEach(([l,v])=>document.querySelector('#cards').insertAdjacentHTML('beforeend',`<article class="card"><div class="label">${l}</div><div class="value">${v}</div></article>`));
-  document.querySelector('#financials').innerHTML=table(['항목',...history.map(x=>x.year)], [['매출액',...history.map(x=>x.revenue)],['영업이익',...history.map(x=>x.operating_income)],['당기순이익',...history.map(x=>x.net_income)],['영업활동현금흐름',...history.map(x=>x.operating_cash_flow)],['자산총계',...history.map(x=>x.total_assets)],['자본총계',...history.map(x=>x.total_equity)]],(v,i)=>i?won(v):v);
-  const keys=[['매출 성장률','revenue_growth_pct','pct'],['ROA','roa_pct','pct'],['ROE','roe_pct','pct'],['CFO 전환율','cfo_conversion_pct','pct'],['DSO','dso_days','day'],['자기자본비율','equity_ratio_pct','pct']];
-  document.querySelector('#ratios').innerHTML='<table><thead><tr><th>지표</th>'+historyRatios.map(x=>`<th>${x.year}</th>`).join('')+'</tr></thead><tbody>'+keys.map(([n,k,t])=>`<tr><td>${n}</td>`+historyRatios.map(x=>`<td>${x[k]==null?'N/A':t==='day'?x[k].toLocaleString('ko-KR',{maximumFractionDigits:1})+'일':pct(x[k])}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
-}).catch(()=>{document.querySelector('#subtitle').innerHTML='<span class="warn">아직 데이터가 없습니다. README의 초기 수집 절차를 실행한 뒤 다시 열어주세요.</span>'});
-</script></body></html>
+<body>
+<main class="wrap">
+<header class="hero"><div class="brand"><img src="assets/dashboard-badge.svg" alt="SD BIOSENSOR"><div><h1>재무 분석 Dashboard</h1><p class="sub">OpenDART 연결 재무제표 · Annual / Half-year / Quarterly</p></div></div></header>
+<div id="meta" class="meta"></div><div id="cards" class="grid"></div>
+
+<section class="fig-grid">
+<article class="panel figure"><h2>Revenue &amp; Operating Income</h2><div id="chart-revenue"></div><p class="caption">Annual figures · 원자료를 억원으로 환산</p></article>
+<article class="panel figure"><h2>Profitability Trend</h2><div id="chart-margin"></div><p class="caption">영업이익률과 순이익률</p></article>
+<article class="panel figure"><h2>Balance Sheet Structure</h2><div id="chart-balance"></div><p class="caption">총자산 · 총부채 · 자본</p></article>
+<article class="panel figure"><h2>Cash Flow Trend</h2><div id="chart-cashflow"></div><p class="caption">영업 · 투자 · 재무활동 현금흐름</p></article>
+</section>
+
+<section class="panel"><h2>Annual</h2><p class="section-note">사업보고서 기준. 금액은 억원, 비율은 %, DSO는 일(day)입니다.</p><div id="annual-table"></div></section>
+<section class="panel"><h2>Half-year</h2><p class="section-note">반기보고서 기준. 손익·현금흐름은 상반기 누적값입니다.</p><div id="half-table"></div></section>
+<section class="panel"><h2>Quarterly</h2><p class="section-note"><span class="badge-note">2Q·3Q·4Q = 직전 누적 DART 값 차감</span> · 분기 단독 실적 · 대차대조표는 기간말 잔액</p><div id="quarter-table"></div></section>
+<section class="panel peer"><h2>Domestic Peer Firms</h2><p class="section-note">국내 상장 체외진단·현장진단 기업 중 사업 유사성을 기준으로 선정한 비교군입니다.</p><div id="peer-table"></div></section>
+<p class="footer">Source: <a href="https://opendart.fss.or.kr/" target="_blank" rel="noreferrer">OpenDART</a> · <a href="https://englishdart.fss.or.kr/dsbc001/selectPopup.ax?selectKey=00854997" target="_blank" rel="noreferrer">DART Company Info</a>. 본 dashboard는 연구용이며 투자 권유가 아닙니다.<br><span id="availability"></span></p>
+</main>
+
+<aside class="toolbox" aria-label="Download tools">
+<div class="toolbox-title">다운로드</div><button class="tool-btn" onclick="printDashboard()">🖨 PDF 저장</button>
+<button class="tool-btn" onclick="toggleExcel()">📊 Excel 다운로드</button>
+<div id="excel-menu" class="excel-menu">
+<label><input type="radio" name="period" value="annual" checked> Annual</label>
+<label><input type="radio" name="period" value="half_year"> Half-year</label>
+<label><input type="radio" name="period" value="quarterly"> Quarterly</label>
+<button class="download-btn" onclick="downloadExcel()">선택 기간 다운로드</button>
+</div></aside>
+
+<script>
+let dashboardData=null;
+const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]});
+const won=v=>v==null?"N/A":(Number(v)/1e8).toLocaleString("ko-KR",{maximumFractionDigits:0})+"억원";
+const pct=v=>v==null?"N/A":Number(v).toLocaleString("ko-KR",{maximumFractionDigits:1})+"%";
+const days=v=>v==null?"N/A":Number(v).toLocaleString("ko-KR",{maximumFractionDigits:1})+"일";
+const rawWon=v=>v==null?null:Number(v)/1e8;
+function latestAnnual(d){const a=d.tables&&d.tables.annual||d.annual_financials||[];return a[a.length-1]||d.financials[d.financials.length-1]}
+function makeSvg(){return '<svg class="chart" viewBox="0 0 720 250" role="img"></svg>'}
+
+function lineChart(id,series){
+const el=document.getElementById(id),W=720,H=250,p={l:48,r:18,t:22,b:32};const all=series.flatMap(function(s){return s.values.filter(function(v){return v!=null})});
+if(!all.length){el.innerHTML="<div class='error'>표시할 데이터가 없습니다.</div>";return}
+const minV=Math.min.apply(null,all),maxV=Math.max.apply(null,all),span=(maxV-minV)||1,step=series[0].values.length>1?(W-p.l-p.r)/(series[0].values.length-1):0;
+const y=function(v){return p.t+(maxV-v)/span*(H-p.t-p.b)},x=function(i){return p.l+i*step};let out='<svg class="chart" viewBox="0 0 '+W+' '+H+'">';
+for(let i=0;i<5;i++){const gy=p.t+i*(H-p.t-p.b)/4,gv=maxV-span*i/4;out+='<line class="gridline" x1="'+p.l+'" x2="'+(W-p.r)+'" y1="'+gy+'" y2="'+gy+'"/><text class="axis-label" x="'+(p.l-8)+'" y="'+(gy+4)+'" text-anchor="end">'+Number(gv).toLocaleString("ko-KR",{maximumFractionDigits:0})+'</text>'}
+series.forEach(function(s){const pts=s.values.map(function(v,i){return v==null?null:[x(i),y(v)]}).filter(Boolean);if(!pts.length)return;out+='<polyline points="'+pts.map(function(pt){return pt.join(",")}).join(" ")+'" fill="none" stroke="'+s.stroke+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';pts.forEach(function(pt){out+='<circle cx="'+pt[0]+'" cy="'+pt[1]+'" r="3.5" fill="#fff" stroke="'+s.stroke+'" stroke-width="2"/>'})});
+series[0].labels.forEach(function(lab,i){out+='<text class="axis-label" x="'+x(i)+'" y="'+(H-10)+'" text-anchor="middle">'+esc(lab)+'</text>'});
+series.forEach(function(s,i){out+='<text class="legend" x="'+(p.l+i*150)+'" y="13" fill="'+s.stroke+'">'+esc(s.name)+'</text>'});out+="</svg>";el.innerHTML=out
+}
+
+function barChart(id,labels,series){
+const el=document.getElementById(id),W=720,H=250,p={l:48,r:18,t:24,b:34};const vals=series.flatMap(function(s){return s.values.filter(function(v){return v!=null})});const maxAbs=Math.max.apply(null,vals.map(function(v){return Math.abs(v)}).concat([1]));const y0=p.t+(H-p.t-p.b)/2,band=(W-p.l-p.r)/Math.max(labels.length,1),bw=Math.max(8,band/(series.length+1)*.72);let out='<svg class="chart" viewBox="0 0 '+W+' '+H+'"><line class="axis" x1="'+p.l+'" x2="'+(W-p.r)+'" y1="'+y0+'" y2="'+y0+'"/>';
+series.forEach(function(s,si){s.values.forEach(function(v,i){if(v==null)return;const xx=p.l+i*band+band*.16+si*bw,h=Math.abs(v)/maxAbs*(H-p.t-p.b)/2,yy=v>=0?y0-h:y0;out+='<rect x="'+xx+'" y="'+yy+'" width="'+(bw-3)+'" height="'+Math.max(h,1)+'" rx="4" fill="'+s.fill+'"/>'})});
+labels.forEach(function(lab,i){out+='<text class="axis-label" x="'+(p.l+i*band+band/2)+'" y="'+(H-10)+'" text-anchor="middle">'+esc(lab)+'</text>'});out+='<text class="axis-label" x="'+(p.l-8)+'" y="'+(p.t+4)+'" text-anchor="end">'+maxAbs.toLocaleString("ko-KR",{maximumFractionDigits:0})+'</text>';
+series.forEach(function(s,i){out+='<text class="legend" x="'+(p.l+i*150)+'" y="12">'+esc(s.name)+'</text>'});out+="</svg>";el.innerHTML=out
+}
+
+const tableColumns=[
+["period_label","기간",function(v){return v}],
+["revenue","매출액",won],["operating_income","영업이익",won],["net_income","당기순이익",won],
+["operating_cash_flow","영업CF",won],["investing_cash_flow","투자CF",won],["financing_cash_flow","재무CF",won],
+["cash_and_cash_equivalents","현금",won],["total_assets","총자산",won],["total_liabilities","총부채",won],["total_equity","자본",won],
+["operating_margin_pct","영업이익률",pct],["net_margin_pct","순이익률",pct],["roa_pct","ROA",pct],["roe_pct","ROE",pct],
+["current_ratio_pct","유동비율",pct],["debt_to_equity_pct","부채/자본",pct],["dso_days","DSO",days]
+];
+function renderDataTable(id,rows){
+if(!rows||!rows.length){document.getElementById(id).innerHTML="<div class='error'>표시할 데이터가 없습니다.</div>";return}
+let head=tableColumns.map(function(c){return "<th>"+esc(c[1])+"</th>"}).join("");
+let body=rows.map(function(r){return "<tr>"+tableColumns.map(function(c){return "<td>"+c[2](r[c[0]])+"</td>"}).join("")+"</tr>"}).join("");
+document.getElementById(id).innerHTML='<div class="table-wrap"><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'
+}
+function renderPeerTable(d){
+const peers=d.peer_firms||[];let body=peers.map(function(p){return "<tr><td><a href=\""+esc(p.url)+"\" target=\"_blank\" rel=\"noreferrer\">"+esc(p.name)+"</a></td><td>"+esc(p.ticker)+"</td><td>"+esc(p.market)+"</td><td>"+esc(p.focus)+"</td><td>"+esc(p.why)+"</td></tr>"}).join("");
+document.getElementById("peer-table").innerHTML='<div class="table-wrap"><table><thead><tr><th>회사</th><th>종목코드</th><th>시장</th><th>주요 영역</th><th>비교 포인트</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+}
+function render(d){
+dashboardData=d;const a=d.tables&&d.tables.annual||[],latest=latestAnnual(d),update=d.updated_at?new Date(d.updated_at).toLocaleString("ko-KR",{timeZone:"Asia/Seoul"}):"N/A";
+document.getElementById("meta").innerHTML='<span class="chip"><b>'+esc(d.company)+'</b> · KOSPI · '+esc(d.stock_code)+'</span><span class="chip">기준: '+esc(d.basis)+'</span><span class="chip">마지막 갱신: '+esc(update)+' KST</span>';
+const cards=[["매출액",won(latest&&latest.revenue),latest&&latest.revenue_growth_pct!=null?"YoY "+pct(latest.revenue_growth_pct):""],["영업이익",won(latest&&latest.operating_income),latest&&latest.operating_margin_pct!=null?"OPM "+pct(latest.operating_margin_pct):""],["당기순이익",won(latest&&latest.net_income),latest&&latest.net_margin_pct!=null?"NPM "+pct(latest.net_margin_pct):""],["유동비율",pct(latest&&latest.current_ratio_pct),"유동성"],["부채/자본",pct(latest&&latest.debt_to_equity_pct),"안정성"],["ROE",pct(latest&&latest.roe_pct),"평균자본 기준"]];
+document.getElementById("cards").innerHTML=cards.map(function(c){return '<article class="card"><div class="label">'+esc(c[0])+'</div><div class="value">'+c[1]+'</div><div class="delta">'+esc(c[2])+'</div></article>'}).join("");
+const years=a.map(function(r){return r.year});
+barChart("chart-revenue",years,[{name:"매출액",values:a.map(function(r){return rawWon(r.revenue)}),fill:"#0969ad"},{name:"영업이익",values:a.map(function(r){return rawWon(r.operating_income)}),fill:"#7aa7c7"}]);
+lineChart("chart-margin",[{name:"영업이익률",values:a.map(function(r){return r.operating_margin_pct}),labels:years,stroke:"#0969ad"},{name:"순이익률",values:a.map(function(r){return r.net_margin_pct}),labels:years,stroke:"#1f7a4d"}]);
+barChart("chart-balance",years,[{name:"총자산",values:a.map(function(r){return rawWon(r.total_assets)}),fill:"#2f6f95"},{name:"총부채",values:a.map(function(r){return rawWon(r.total_liabilities)}),fill:"#b54708"},{name:"자본",values:a.map(function(r){return rawWon(r.total_equity)}),fill:"#5b8db8"}]);
+barChart("chart-cashflow",years,[{name:"영업CF",values:a.map(function(r){return rawWon(r.operating_cash_flow)}),fill:"#1f7a4d"},{name:"투자CF",values:a.map(function(r){return rawWon(r.investing_cash_flow)}),fill:"#b54708"},{name:"재무CF",values:a.map(function(r){return rawWon(r.financing_cash_flow)}),fill:"#6f42c1"}]);
+renderDataTable("annual-table",d.tables&&d.tables.annual);renderDataTable("half-table",d.tables&&d.tables.half_year);renderDataTable("quarter-table",d.tables&&d.tables.quarterly);renderPeerTable(d);
+const av=d.data_availability||{};document.getElementById("availability").textContent="2010년부터 수집 시도 · 최초 가용 연결재무제표: "+(av.first_available_year||"N/A")+" · 가용 연도: "+(av.available_years||[]).join(", ")
+}
+function printDashboard(){window.print()}
+function toggleExcel(){document.getElementById("excel-menu").classList.toggle("open")}
+function excelValue(k,v){if(v==null)return "";if(k==="period_label")return String(v);if(k.endsWith("_pct"))return Number(v).toFixed(2)+"%";if(k==="dso_days")return Number(v).toFixed(1);if(["revenue","operating_income","net_income","operating_cash_flow","investing_cash_flow","financing_cash_flow","cash_and_cash_equivalents","total_assets","total_liabilities","total_equity"].includes(k))return rawWon(v).toFixed(2);return String(v)}
+function downloadExcel(){
+if(!dashboardData)return;const period=document.querySelector('input[name="period"]:checked').value,rows=dashboardData.tables&&dashboardData.tables[period]||[],title=period==="annual"?"Annual":period==="half_year"?"Half-year":"Quarterly",headers=tableColumns.map(function(c){return c[1]});
+let html='<!doctype html><html><head><meta charset="utf-8"><style>table{border-collapse:collapse}th,td{border:1px solid #bbb;padding:6px}th{background:#eaf2f8}</style></head><body><h2>SD BIOSENSOR — '+title+'</h2><p>Source: OpenDART · Amounts in KRW hundred-million (억원)</p><table><tr>'+headers.map(function(h){return "<th>"+esc(h)+"</th>"}).join("");
+html+=rows.map(function(r){return "<tr>"+tableColumns.map(function(c){return "<td>"+esc(excelValue(c[0],r[c[0]]))+"</td>"}).join("")+"</tr>"}).join("");html+="</table></body></html>";
+const blob=new Blob(["\ufeff",html],{type:"application/vnd.ms-excel;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a"),stamp=new Date().toISOString().slice(0,10);a.href=url;a.download="SD_Biosensor_"+period+"_"+stamp+".xls";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)
+}
+fetch("data/dashboard.json").then(function(r){if(!r.ok)throw new Error("dashboard data unavailable");return r.json()}).then(render).catch(function(err){console.error(err);document.getElementById("meta").innerHTML='<span class="chip warn">dashboard.json을 불러오지 못했습니다.</span>'});
+</script>
+</body>
+</html>

@@ -1,51 +1,79 @@
 # 에스디바이오센서 DART 재무 분석 에이전트
 
-[![대시보드 바로가기](https://img.shields.io/badge/%F0%9F%94%97-%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-0969da?style=for-the-badge)](https://jinawinwin.github.io/Dart_SDbio/)
+<a href="https://jinawinwin.github.io/Dart_SDbio/"><img src="assets/dashboard-badge.svg" alt="대시보드 바로가기" width="360"></a>
 
-에스디바이오센서(종목코드 `137310`, DART 고유번호 `00854997`)의 연결 재무제표를 OpenDART API에서 수집하고, 주요 재무비율을 계산해 GitHub Pages 대시보드로 표시합니다. 2010년부터 현재까지 연간·1분기·반기·3분기 공시를 수집하며, 이후 공시는 GitHub Actions가 매주 자동 점검합니다.
+**대시보드 바로가기:** https://jinawinwin.github.io/Dart_SDbio/
 
-## 포함 내용
+에스디바이오센서(종목코드 137310, DART 고유번호 00854997)의 연결 재무제표를 OpenDART API에서 수집하고, 주요 재무비율을 계산하여 GitHub Pages 대시보드로 시각화합니다.
 
-- `scripts/fetch_opendart.py`: 2010년부터 연간(`11011`)·1분기(`11013`)·반기(`11012`)·3분기(`11014`) 연결 재무제표를 수집하고 원문 응답을 `data/raw/`에 저장합니다. 제공한 [기업 RSS](https://dart.fss.or.kr/api/companyRSS.xml?crpCd=00854997) 주소도 기록합니다.
-- `scripts/analyze.py`: 동일 보고서 유형의 전년 기간과 비교해 수익성, 유동성, 안정성, 현금흐름, 활동성 지표를 계산합니다. ROA·ROE·DSO에는 평균 잔액을 적용합니다.
-- `index.html`: API 키를 노출하지 않고 계산된 JSON만 읽는 GitHub Pages 정적 대시보드입니다.
-- `.github/workflows/update-data.yml`: 매주와 수동 실행 시 데이터를 갱신하고 변경된 수치만 자동 커밋합니다.
+## 대시보드 구성
 
-## OpenDART API 키 설정
+- 상단: 핵심 KPI와 매출·영업이익, 수익성, 재무구조, 현금흐름 figures
+- 하단: Annual / Half-year / Quarterly 3개 테이블
+- Quarterly: DART 누적 손익·현금흐름을 직전 누적값에서 차감하여 분기 단독 실적으로 표시
+- 우측 플로팅 창: PDF 저장 및 Excel 다운로드
+- Excel 다운로드: Annual / Half-year / Quarterly 중 기간을 선택하여 Excel 호환 xls로 저장
+- 하단: 국내 peer firms 비교표
 
-1. [OpenDART](https://opendart.fss.or.kr/)에서 인증키를 발급받습니다.
-2. 로컬에서는 `.env.example`을 `.env`로 복사한 뒤 다음처럼 입력합니다. `.env`는 Git에 올라가지 않습니다.
+## 데이터 수집·자동 업데이트
 
-```text
-DART_API_KEY=발급받은_인증키
-```
+scripts/fetch_opendart.py는 2010년부터 현재 연도까지 사업보고서(11011), 반기보고서(11012), 1분기(11013), 3분기(11014) 연결 재무제표를 수집합니다. DART에서 특정 연도의 완전한 연결 재무제표가 반환되지 않는 경우에는 해당 기간을 제외하고 가용기간을 기록합니다.
 
-3. GitHub 저장소 `jinawinwin/Dart_SDbio`의 **Settings → Secrets and variables → Actions → New repository secret**에서 이름을 `DART_API_KEY`로 지정하고 같은 키를 등록합니다. 키를 코드·README·Issues에 올리지 마세요.
+GitHub Actions는 매월 1일 11:17 KST(02:17 UTC)에 자동 실행됩니다. 저장소의 코드가 변경되어도 업데이트 workflow가 자동 실행되며, 데이터 파일만 변경된 경우에는 재실행 루프가 발생하지 않도록 push path를 제한했습니다. GitHub의 scheduled workflow는 시스템 부하에 따라 지연될 수 있습니다.
 
-## 처음 실행
+### OpenDART API 키
 
-```powershell
-python scripts/fetch_opendart.py --start-year 2010
-python scripts/analyze.py
-```
+GitHub 저장소의 Settings → Secrets and variables → Actions → New repository secret에서 이름을 DART_API_KEY로 등록합니다.
 
-생성되는 `data/financial_summary.csv`, `data/ratios.csv`, `data/dashboard.json`을 확인한 뒤 커밋·푸시합니다. 분기·반기 손익과 현금흐름은 DART의 누적값일 수 있으므로, 분기 단독 실적 해석에는 전 분기 값 차감이 필요합니다.
+API key는 코드, README, Issues에 직접 넣지 않습니다. 로컬 실행은 .env.example을 .env로 복사하여 사용할 수 있습니다.
 
-## GitHub 업로드와 대시보드 공개
+## 실행
 
-ZIP을 푼 폴더에서 다음을 실행합니다.
+    python scripts/fetch_opendart.py --start-year 2010
+    python scripts/analyze.py
 
-```powershell
-git init
-git branch -M main
-git remote add origin https://github.com/jinawinwin/Dart_SDbio.git
-git add .
-git commit -m "feat: add SD Biosensor OpenDART dashboard"
-git push -u origin main
-```
+GitHub Pages가 활성화된 저장소에서는 index.html이 곧 대시보드입니다.
 
-이후 GitHub의 **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `(root)`**로 설정합니다. Actions 탭에서 **Update OpenDART financial data → Run workflow**를 실행하면 최초 자동 수집을 수행합니다.
+## 국내 Peer Firms
 
-## 지표와 한계
+아래 peer group은 국내 상장 체외진단·현장진단 기업 중 사업 유사성을 기준으로 선정한 비교군입니다. 직접적인 1:1 경쟁사라는 의미는 아닙니다.
 
-영업이익률, 순이익률, 유동비율, 부채비율, 자기자본비율, ROA, ROE, CFO 전환율, DSO, CAPEX가 식별될 때 FCF를 제공합니다. EBITDA·ROIC·순차입금·PER·PBR·EV/EBITDA는 신뢰할 수 있는 감가상각·세율·차입금·시가 데이터가 이 프로젝트의 OpenDART 요약 수치만으로 확정되지 않아 계산하지 않습니다. 비경상 손익과 계정명 차이는 사업보고서 주석으로 추가 검토해야 하며, 본 프로젝트는 투자 권유가 아닙니다.
+| 회사 | 종목코드 | 시장 | 주요 영역 | 비교 포인트 |
+|---|---:|---|---|---|
+| 씨젠 | 096530 | KOSDAQ | 분자진단·PCR | 감염성 질환 중심 체외진단 |
+| 바디텍메드 | 206640 | KOSDAQ | POCT·면역진단 | 현장진단 플랫폼/카트리지 |
+| 수젠텍 | 253840 | KOSDAQ | 면역진단·신속검사 | 체외진단 시약 및 신속검사 |
+| 휴마시스 | 205470 | KOSDAQ | POCT·자가검사 | 현장진단·자가진단 |
+| 피씨엘 | 241820 | KOSDAQ | 체외진단·다중검사 | 다중검사 플랫폼 및 시약 |
+
+Peer 선정 참고: 2022년 SD Biosensor 관련 DART 사업보고서는 국내 현장진단(POCT) 경쟁군으로 바디텍메드·엑세스바이오 등을, 코로나19 신속항원검사 경쟁군으로 휴마시스 등을 제시합니다. 이 프로젝트는 여기에 분자진단·체외진단의 국내 상장 비교기업을 보완하여 peer group을 구성합니다.
+
+## 보안·품질 개선
+
+- Actions는 contents: write만 허용
+- checkout@v7, setup-python@v7 사용
+- workflow concurrency로 중복 실행 방지
+- OpenDART 요청에 재시도 3회와 User-Agent 적용
+- 금액 0을 결측치로 오인하지 않도록 파싱 수정
+- .env 및 로컬 파일을 .gitignore로 차단
+- 2Q/3Q/4Q 분기 단독 실적 계산을 자동화
+- ROA·ROE·DSO는 평균 잔액 기반으로 계산
+
+## 주요 해석 유의사항
+
+DART 반기·분기 손익 및 현금흐름은 누적 기준일 수 있습니다. 따라서 dashboard의 Quarterly 표에서 2Q·3Q·4Q는 순차 차감하여 분기 단독 값으로 만들었습니다. 대차대조표 항목은 각 기간말 잔액입니다.
+
+본 프로젝트의 peer table은 기업 비교를 위한 연구용 분류이며 투자 권유가 아닙니다.
+
+## Source
+
+- https://opendart.fss.or.kr/
+- https://englishdart.fss.or.kr/dsbc001/selectPopup.ax?selectKey=00854997
+- https://www.sdbiosensor.com/
+
+## GitHub Pages / 저장소 링크
+
+Dashboard: https://jinawinwin.github.io/Dart_SDbio/
+Repository: https://github.com/jinawinwin/Dart_SDbio/
+
+About → Website에는 Dashboard 주소를 등록하면 저장소 오른쪽에서도 바로 접근할 수 있습니다. 현재 GitHub connector에서 Repository의 About/Homepage 메타데이터를 수정하는 쓰기 API는 제공되지 않아, 링크 배지와 README는 자동 반영했습니다.
