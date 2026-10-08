@@ -5,7 +5,7 @@
   "collection_start_year": 2010,
   "coverage": "2010년부터 현재까지 OpenDART 수집을 시도하며, 연결 재무제표가 반환된 기간을 표시",
   "basis": "연결 기준. 금액 단위: 원. 2Q·3Q·4Q는 DART 누적값에서 직전 누적값을 차감한 분기 단독 실적.",
-  "updated_at": "2026-10-08T07:37:29.175751+00:00",
+  "updated_at": "2026-10-08T07:47:02.498795+00:00",
   "source": {
     "provider": "OpenDART 단일회사 재무제표 API",
     "corp_code": "00854997",
