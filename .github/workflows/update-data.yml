@@ -9,6 +9,7 @@ on:
       - "index.html"
       - "README.md"
       - "assets/**"
+      - "requirements.txt"
       - ".github/workflows/update-data.yml"
   schedule:
     - cron: "17 2 1 * *"
@@ -23,30 +24,47 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    env:
+      PYTHONUNBUFFERED: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
+          persist-credentials: true
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: "3.13"
-      - name: Fetch and analyse
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+
+      - name: Fetch OpenDART data
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
-        run: |
-          python scripts/fetch_opendart.py --start-year 2010
-          python scripts/analyze.py
+        run: python scripts/fetch_opendart.py --start-year 2010
+
+      - name: Analyse data
+        run: python scripts/analyze.py
+
+      - name: Build Excel downloads
+        run: python scripts/build_downloads.py
+
+      - name: Validate outputs
+        run: python scripts/validate_dashboard.py
+
       - name: Commit refreshed data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data reports
+          git add data reports downloads
           if git diff --cached --quiet; then
             echo "No data changes to commit."
           else
             git commit -m "chore: update OpenDART financial data"
-            git push
+            git push origin HEAD:main
           fi
