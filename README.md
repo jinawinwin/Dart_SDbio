@@ -1,6 +1,6 @@
 # 에스디바이오센서 DART 재무 분석 에이전트
 
-<a href="https://jinawinwin.github.io/Dart_SDbio/"><img src="assets/sdbiosensor-logo.jpg" alt="대시보드 바로가기" width="360"></a>
+<a href="https://jinawinwin.github.io/Dart_SDbio/"><img src="assets/dashboard-badge.svg" alt="대시보드 바로가기" width="360"></a>
 
 **🔗 대시보드 바로가기:** https://jinawinwin.github.io/Dart_SDbio/
 
