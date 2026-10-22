@@ -19,7 +19,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .brand img{width:330px;max-width:54vw;height:auto;display:block}
 .hero-copy h1{margin:0;font-size:30px;letter-spacing:-.03em}
 .sub{margin:6px 0 0;color:var(--muted);font-size:14px}
-.tabs{display:flex;gap:8px;margin:12px 0;padding:6px;background:#e8eff5;border-radius:14px}.tab-btn{flex:1;padding:12px 6px;border:1px solid transparent;border-radius:10px;background:transparent;font-weight:800;cursor:pointer}.tab-btn.active{background:#fff;border-color:var(--line)}.tab-pane[hidden]{display:none!important}.analysis-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}.analysis-card{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}.analysis-value{font-size:24px;overflow-wrap:anywhere;font-weight:800}.meta{display:flex;flex-wrap:wrap;gap:8px 10px;color:var(--muted);font-size:12px;margin:8px 0 18px}
+.tabs{display:flex;gap:8px;margin:12px 0;padding:6px;background:#e8eff5;border-radius:14px}.tab-btn{flex:1;padding:12px 6px;border:1px solid transparent;border-radius:10px;background:transparent;font-weight:800;cursor:pointer}.tab-btn.active{background:#fff;border-color:var(--line)}.tab-pane[hidden]{display:none!important}.analysis-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}.analysis-card{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}.analysis-value{font-size:24px;overflow-wrap:anywhere;font-weight:800}#executive-analysis .analysis-value,#executive-cost-analysis .analysis-value{font-size:23px}#executive-analysis .analysis-card h3,#executive-cost-analysis .analysis-card h3{font-size:14px}.meta{display:flex;flex-wrap:wrap;gap:8px 10px;color:var(--muted);font-size:12px;margin:8px 0 18px}
 .chip{padding:7px 11px;border:1px solid var(--line);background:#fff;border-radius:999px}
 .kpi-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:0 0 18px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:var(--shadow);min-height:98px}
@@ -157,9 +157,10 @@ td.na{color:#9fb3c8}
   <section id="tab-investment" class="tab-pane" hidden><section class="panel"><h2>Investment Analysis</h2><p class="section-note">성장성, 수익성, 재무레버리지 및 현금흐름을 검토합니다. 과거 성과는 미래 수익을 보장하지 않습니다.</p><div id="investment-analysis" class="analysis-grid"></div><div class="fig-grid"><article class="panel figure"><h2>매출 성장률</h2><div id="invest-growth"></div></article><article class="panel figure"><h2>ROE / ROA</h2><div id="invest-returns"></div></article></div><div id="investment-table"></div></section></section>
   <section id="tab-executives" class="tab-pane" hidden><section class="panel"><h2>Executive Management Analysis</h2><p class="section-note">운영성과, 단기 유동성, 운전자본과 현금흐름을 점검해 경영 의사결정을 지원합니다.</p><div id="executive-analysis" class="analysis-grid"></div><h2>원가관리 및 운영 효율성</h2><p class="section-note">원가율·판관비율은 해당 비용 계정이 재무자료에 있을 때만 산출됩니다. 비용 세부 계정이 없는 경우 임의 추정하지 않고 — 로 표시합니다.</p><div id="executive-cost-analysis" class="analysis-grid"></div><div class="fig-grid"><article class="panel figure"><h2>영업현금흐름 / CAPEX</h2><div id="exec-cash"></div></article><article class="panel figure"><h2>매출채권 회수일수(DSO)</h2><div id="exec-efficiency"></div></article></div><div id="executive-table"></div></section></section>
   <section class="panel peer table-panel">
-    <div class="section-title"><h2>Domestic Peer Firms</h2><span class="badge-note">국내 비교군</span></div>
-    <p class="section-note">국내 상장 체외진단·현장진단 기업 중 사업 유사성을 기준으로 선정한 비교군입니다.</p>
+    <div class="section-title"><h2>Peer Firms</h2><span class="badge-note">국내·글로벌 비교군</span></div>
+    <h3>Domestic Peer Firms</h3><p class="section-note">국내 상장 체외진단·현장진단 기업 중 사업 유사성을 기준으로 선정한 비교군입니다.</p>
     <div id="peer-table"></div>
+    <h3 style="margin-top:24px">Global Peer Firms</h3><p class="section-note">글로벌 진단기업 중 진단제품·검사 플랫폼·체외진단 사업의 유사성을 참고해 선정했습니다. 사업 규모와 제품 포트폴리오가 다르므로 직접적인 동종기업 비교에는 한계가 있습니다.</p><div id="global-peer-table"></div>
   </section>
 
   <p class="footer">
@@ -274,6 +275,14 @@ function renderPeerTable(d){
   const peers=d.peer_firms||[];
   const body=peers.map(p=>"<tr><td><a href=\""+esc(p.url)+"\" target=\"_blank\" rel=\"noreferrer\">"+esc(p.name)+"</a></td><td>"+esc(p.ticker)+"</td><td>"+esc(p.market)+"</td><td>"+esc(p.focus)+"</td><td>"+esc(p.why)+"</td></tr>").join("");
   document.getElementById("peer-table").innerHTML='<div class="table-wrap"><table><thead><tr><th>회사</th><th>종목코드</th><th>시장</th><th>주요 영역</th><th>비교 포인트</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+  const globalPeers=[
+    {name:"Roche Diagnostics",url:"https://diagnostics.roche.com/",market:"Switzerland · Global",focus:"분자진단·면역진단·임상검사",why:"광범위한 체외진단 포트폴리오와 검사 솔루션"},
+    {name:"Abbott Diagnostics",url:"https://www.corelaboratory.abbott/",market:"United States · Global",focus:"현장진단·면역진단·분자진단",why:"현장검사 및 검사실 진단 사업 비교"},
+    {name:"Siemens Healthineers",url:"https://www.siemens-healthineers.com/",market:"Germany · Global",focus:"검사실 진단·면역진단",why:"진단 플랫폼과 검사실 자동화 중심 비교"},
+    {name:"QuidelOrtho",url:"https://www.quidelortho.com/",market:"United States · Global",focus:"신속진단·면역진단·임상화학",why:"신속검사 및 면역진단 제품군 비교"},
+    {name:"bioMérieux",url:"https://www.biomerieux.com/",market:"France · Global",focus:"체외진단·감염성 질환 진단",why:"감염성 질환 진단과 검사 솔루션 비교"}
+  ];
+  document.getElementById("global-peer-table").innerHTML='<div class="table-wrap"><table><thead><tr><th>회사</th><th>본사/시장</th><th>주요 영역</th><th>비교 포인트</th></tr></thead><tbody>'+globalPeers.map(p=>'<tr><td><a href="'+esc(p.url)+'" target="_blank" rel="noreferrer">'+esc(p.name)+'</a></td><td>'+esc(p.market)+'</td><td>'+esc(p.focus)+'</td><td>'+esc(p.why)+'</td></tr>').join('')+'</tbody></table></div>';
 }
 
 function render(d){
