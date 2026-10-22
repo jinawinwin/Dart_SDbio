@@ -46,7 +46,7 @@ python scripts/validate_dashboard.py</pre>
 
 필요 패키지는 <code>requirements.txt</code>의 <code>openpyxl</code>뿐입니다.
 
-## 국내 Peer Firms
+## Peer Firms\n\n### Domestic Peer Firms
 
 국내 상장 체외진단·현장진단 기업 중 사업 유사성을 기준으로 선정한 비교군입니다. 직접적인 1:1 경쟁사라는 의미는 아닙니다.
 
@@ -59,6 +59,24 @@ python scripts/validate_dashboard.py</pre>
 | 피씨엘 | 241820 | KOSDAQ | 체외진단·다중검사 | 검사 플랫폼 및 시약 |
 
 SD Biosensor의 국내 경쟁·비교군을 구성할 때 현장진단(POCT), 면역진단, 분자진단, 신속검사 영역의 사업 유사성을 함께 고려했습니다. DART의 2026년 정기공시가 제공되고 있어 향후 peer rationale을 추가 보완할 수 있습니다.
+
+### Global Peer Firms
+
+글로벌 진단기업 중 체외진단 포트폴리오, 신속검사, 면역진단 및 검사실 진단의 사업 유사성을 참고한 비교군입니다. 사업 규모·제품 믹스·지역별 매출 구조가 상이하므로 직접적인 동종기업 비교에는 한계가 있습니다.
+
+| 회사 | 본사/시장 | 주요 영역 | 비교 포인트 |
+|---|---|---|---|
+| Roche Diagnostics | Switzerland · Global | 분자진단·면역진단·임상검사 | 광범위한 체외진단 포트폴리오와 검사 솔루션 |
+| Abbott Diagnostics | United States · Global | 현장진단·면역진단·분자진단 | 현장검사 및 검사실 진단 사업 |
+| Siemens Healthineers | Germany · Global | 검사실 진단·면역진단 | 진단 플랫폼과 검사실 자동화 |
+| QuidelOrtho | United States · Global | 신속진단·면역진단·임상화학 | 신속검사 및 면역진단 제품군 |
+| bioMérieux | France · Global | 체외진단·감염성 질환 진단 | 감염성 질환 진단과 검사 솔루션 |
+
+- [Roche Diagnostics](https://diagnostics.roche.com/)
+- [Abbott Diagnostics](https://www.corelaboratory.abbott/)
+- [Siemens Healthineers](https://www.siemens-healthineers.com/)
+- [QuidelOrtho](https://www.quidelortho.com/)
+- [bioMérieux](https://www.biomerieux.com/)
 
 ## 보안·품질 관리
 
